@@ -161,7 +161,7 @@ contract('BookStore', (accounts) => {
       //  const book_price = 50
       let price = web3.utils.toWei('50', 'ether')
       const currency =
-        '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+        purchase_token.address;
       const quantity = 100
 
       const author = accounts[5]
@@ -175,15 +175,19 @@ contract('BookStore', (accounts) => {
         }
       )
 
-      let book_version_price =
-        await book_store.bookVersionPrice(1)
+      await book_store.setApprovalForAll(buyer, true, { from: author })
 
-      book_version_price = web3.utils.fromWei(
-        book_version_price,
-        'ether'
-      )
+      await book_store.purchaseFromAuthor(1, {from: buyer});
 
-      assert.equal(book_version_price, 50)
+      let book_version_balance =
+        await book_store.balanceOf(buyer, 1)
+
+      // book_version_price = web3.utils.fromWei(
+      //   book_version_price,
+      //   'ether'
+      // )
+
+      assert.equal(book_version_blance, 1)
     })
   })
 })

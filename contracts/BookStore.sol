@@ -12,6 +12,7 @@ contract BookStore is ERC1155 {
     struct BookVersion {
         uint256 price;
         address currency;
+        address author;
     }
 
     constructor() ERC1155('https://example.com/api/{id}.json') {
@@ -21,8 +22,13 @@ contract BookStore is ERC1155 {
     function publish(uint256 _quantity, uint256 _price, address _currency) public {
         _mint(msg.sender, _currentBookVersionId, _quantity, "");
 
-        _bookVersions[_currentBookVersionId] = BookVersion(_price, _currency);
+        _bookVersions[_currentBookVersionId] = BookVersion(_price, _currency, msg.sender);
         _currentBookVersionId += 1;
+    }
+
+    function purchaseFromAuthor(uint256 _bookVersionId) public {
+        BookVersion memory bookVersion = _bookVersions[_bookVersionId];
+        safeTransferFrom(bookVersion.author, msg.sender, _bookVersionId, 1, "");
     }
 
     function bookVersionPrice(uint256 _bookVersionId) public view returns(uint256) {
